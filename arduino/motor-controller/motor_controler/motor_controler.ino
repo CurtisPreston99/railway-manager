@@ -15,8 +15,14 @@ void setup() {
 }
 
 void loop() {
-spdFaster?
-  // put your main code here, to run repeatedly:
-  motor1.init();
-  motor2.init();
+  spdFaster ? spd++ : spd--;
+
+  if (spd >= 1000 | spd <= 500) { spdFaster = !spdFaster; }
+  if (spd <= 500) { dir = !dir; }
+
+  motor1.setSpeed(spd);
+  motor2.setSpeed(spd);
+
+  motor1.setDirection(dir);
+  motor2.setDirection(!dir);
 }
