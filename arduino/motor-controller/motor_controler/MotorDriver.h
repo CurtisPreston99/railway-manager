@@ -10,6 +10,7 @@ private:
   int spdPin;
 
   int spd = 0;
+  bool forward = true;
 
 public:
   MotorDriver(int fPin, int rPin, int pwmPin);
@@ -20,6 +21,7 @@ public:
   void setSpeed(int speed);
 
   void setDirection(bool fwd);
+  String getState();
 };
 
 #endif
