@@ -22,6 +22,8 @@ public:
 
   void setDirection(bool fwd);
   String getState();
+  int getSpeed();
+  bool getForward();
 };
 
 #endif

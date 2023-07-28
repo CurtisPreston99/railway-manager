@@ -19,10 +19,10 @@ void MotorDriver::init() {
 }
 
 
-//speed 0-1000
+//speed 0-100
 void MotorDriver::setSpeed(int speed) {
   this->spd = speed;
-  int pwmOutput = map(speed, 0, 1000, 0, 255);  // Map the spd value from 0 to 255
+  int pwmOutput = map(speed, 0, 100, 0, 255);  // Map the spd value from 0 to 255
   analogWrite(this->spdPin, pwmOutput);         // Send PWM signal to L298N Enable pin
 };
 
@@ -39,4 +39,11 @@ void MotorDriver::setDirection(bool fwd) {
 
 String MotorDriver::getState(){
   return String("fwd:")+ String(this->forward?"true":"false")+String(",speed:")+String(this->spd);
+}
+
+int MotorDriver::getSpeed(){
+    return this->spd;
+}
+bool MotorDriver::getForward(){
+  return this->forward;
 }
