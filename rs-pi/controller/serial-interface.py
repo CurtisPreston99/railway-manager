@@ -2,9 +2,12 @@ import serial
 import time
 import json
 import threading
+import keyboard
+import PySimpleGUI as sg
+
 
 class SerialInterfacer:
-    
+
     def __init__(self, port, baud_rate=9600, timeout=1):
         self.debugLogs = False
         self.port = port
@@ -14,7 +17,8 @@ class SerialInterfacer:
 
     def open_serial_port(self):
         try:
-            self.ser = serial.Serial(self.port, self.baud_rate, timeout=self.timeout)
+            self.ser = serial.Serial(
+                self.port, self.baud_rate, timeout=self.timeout)
             print(f"Serial port {self.port} opened.")
         except serial.SerialException as e:
             print(f"Error: {e}")
@@ -31,38 +35,45 @@ class SerialInterfacer:
 
             # Send data to the serial port
             json_string = json.dumps(data_to_send)
-            if(self.debugLogs):
-                print(json_string) 
+            if (self.debugLogs):
+                print(json_string)
 
             self.ser.write(json_string.encode())
             self.ser.flush()
         except serial.SerialException as e:
             print(f"Error: {e}")
             return None
-    
+
     def read_serial(self):
         while True:
             try:
                 # Read data from the serial port
                 data = self.ser.readline()
                 print(f"Received data: {data}")
-                    
+
             except UnicodeDecodeError as e:
                 print(f"Error decoding data: {e}")
             except KeyboardInterrupt:
                 # Stop listening if Ctrl+C is pressed
                 break
 
+def makeMotorFromUi(inputs):
+    #  {'m1_spd': 45.0, 'm1_fwd': False, 'm1_rev': True, 'm1_spd0': 0.0, 'm2_fwd': False, 'm2_rev': True}
+    data = {
+        "motor_1": {"spd": inputs["m1_spd"], "forward": inputs["m1_rev"]},
+        "motor_2": {"spd": inputs["m2_spd"], "forward": inputs["m2_rev"]},
+    }
+    return data
+
 if __name__ == "__main__":
     serial_port = "COM4"
 
     # Replace the following line with the data you want to send
     data_to_send = {
-        "motor_1": {"spd":100,"forward":True},
-        "motor_2":{"spd":100,"forward":False},
+        "motor_1": {"spd": 100, "forward": True},
+        "motor_2": {"spd": 100, "forward": False},
     }
 
-    
     '{"motor_1":{"spd":100,"forward":true},"motor_2":{"spd":50,"forward":false}}'
     # Create an instance of the SerialCommunicator class
     communicator = SerialInterfacer(serial_port)
@@ -74,19 +85,32 @@ if __name__ == "__main__":
         # Send and receive data
 
         serial_thread = threading.Thread(target=communicator.read_serial)
-        serial_thread.daemon = True  # Allow the thread to be terminated when the main program exits
+        # Allow the thread to be terminated when the main program exits
+        serial_thread.daemon = True
         serial_thread.start()
 
-        while True:
-            # For example, you can run some other tasks in the main thread
-            print("Running other tasks...")
-            # Add your other functions or tasks here
+        sg.theme('DarkAmber')   # Add a touch of color
+        layout = [[sg.Text('motor controler')],
+                  [sg.Text('motor 1'), sg.Slider(orientation='h',range=[0,100],k='m1_spd'),sg.Radio('fwd', "motor_1_dir", default=True, k='m1_fwd'), sg.Radio('rev', "motor_1_dir", default=True, k='m1_rev')],
+                  [sg.Text('motor 2'), sg.Slider(orientation='h',range=[0,100],k='m2_spd'), sg.Radio('fwd', "motor_2_dir", default=True, k='m2_fwd'), sg.Radio('rev', "motor_2_dir", default=True, k='m2_rev')],
+                  [sg.Button('Ok'), sg.Button('Cancel')]]
 
-            # Sleep for a short time to allow the other functions to run
-            # Adjust this sleep time based on your specific use case
-            communicator.send_data(data_to_send)
-            time.sleep(3)
+        window = sg.Window('Window Title', layout)
+
+        while True:
+
+            event, values = window.read()
+            if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
+                break
+            print('You entered ', values)
+            newMotorValues = makeMotorFromUi(values)
+            print(newMotorValues)
+            communicator.send_data(newMotorValues)
+
 
     finally:
         # Close the serial port when done
         communicator.close_serial_port()
+
+
+

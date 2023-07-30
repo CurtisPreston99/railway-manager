@@ -1,6 +1,10 @@
 #include <ArduinoJson.h>
 #include "MotorDriver.h"
 
+const unsigned long statusInterval = 10000; // Interval in milliseconds (e.g., 5000ms = 5 seconds)
+unsigned long lastStatusMillis = 0;
+
+
 String id = String("motorDriver1");
 bool spdFaster = true;
 bool dir = false;
@@ -55,17 +59,18 @@ void loop() {
       motor1.setDirection(doc["motor_1"]["forward"]);
       motor2.setDirection(doc["motor_2"]["forward"]);
 
+      sendUpdate();
 
-      DynamicJsonDocument motorLog(1024);
-      motorLog["id"] = id;
-      motorLog["motor_1"]["forward"] = motor1.getForward();
-      motorLog["motor_2"]["forward"] = motor2.getForward();
-      motorLog["motor_1"]["spd"] = motor1.getSpeed();
-      motorLog["motor_2"]["spd"] = motor2.getSpeed();
-      serializeJson(motorLog, Serial);
     }
-    Serial.println();
-    Serial.flush();
+
+  }
+  unsigned long currentMillis = millis();
+  if (currentMillis - lastStatusMillis  >= statusInterval) {
+    // Perform the action here
+    sendUpdate();
+
+    // Update the previousMillis for the next interval
+    lastStatusMillis  = currentMillis;
   }
 
   //  spdFaster ? spd+=spdD : spd-=spdD;
@@ -81,4 +86,16 @@ void loop() {
 
   //  Serial.println(String("motor 1:")+motor1.getState());
   //  Serial.println(String("motor 2:")+motor2.getState());
+}
+
+void sendUpdate() {
+  DynamicJsonDocument motorLog(1024);
+  motorLog["id"] = id;
+  motorLog["motor_1"]["forward"] = motor1.getForward();
+  motorLog["motor_2"]["forward"] = motor2.getForward();
+  motorLog["motor_1"]["spd"] = motor1.getSpeed();
+  motorLog["motor_2"]["spd"] = motor2.getSpeed();
+  serializeJson(motorLog, Serial);
+  Serial.println();
+  Serial.flush();
 }

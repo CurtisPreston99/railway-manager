@@ -16,6 +16,8 @@ void MotorDriver::init() {
   pinMode(this->fwdPin, OUTPUT);  // 0x1 = output
   pinMode(this->revPin, OUTPUT);
   pinMode(this->spdPin, OUTPUT);
+  setSpeed(0);
+  setDirection(true);
 }
 
 
