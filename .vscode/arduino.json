@@ -1,7 +1,7 @@
 {
-    "port": "COM5",
+    "port": "COM1",
     "configuration": "cpu=atmega328old",
     "board": "arduino:avr:nano",
-    "programmer": "arduinoisp",
+    "programmer": "arduinoasispatmega32u4",
     "sketch": "arduino\\tests\\test.ino"
 }

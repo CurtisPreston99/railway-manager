@@ -17,7 +17,7 @@ public:
 
   void init();
 
-  //speed 0-1000
+  //speed 0-100
   void setSpeed(int speed);
 
   void setDirection(bool fwd);

@@ -62,11 +62,13 @@ def makeMotorFromUi(inputs):
     data = {
         "motor_1": {"spd": inputs["m1_spd"], "forward": inputs["m1_rev"]},
         "motor_2": {"spd": inputs["m2_spd"], "forward": inputs["m2_rev"]},
+        "motor_3": {"spd": inputs["m3_spd"], "forward": inputs["m3_rev"]},
+        "motor_4": {"spd": inputs["m4_spd"], "forward": inputs["m4_rev"]},
     }
     return data
 
 if __name__ == "__main__":
-    serial_port = "COM4"
+    serial_port = "COM5"
 
     # Replace the following line with the data you want to send
     data_to_send = {
@@ -93,6 +95,8 @@ if __name__ == "__main__":
         layout = [[sg.Text('motor controler')],
                   [sg.Text('motor 1'), sg.Slider(orientation='h',range=[0,100],k='m1_spd'),sg.Radio('fwd', "motor_1_dir", default=True, k='m1_fwd'), sg.Radio('rev', "motor_1_dir", default=True, k='m1_rev')],
                   [sg.Text('motor 2'), sg.Slider(orientation='h',range=[0,100],k='m2_spd'), sg.Radio('fwd', "motor_2_dir", default=True, k='m2_fwd'), sg.Radio('rev', "motor_2_dir", default=True, k='m2_rev')],
+                  [sg.Text('motor 3'), sg.Slider(orientation='h',range=[0,100],k='m3_spd'), sg.Radio('fwd', "motor_3_dir", default=True, k='m3_fwd'), sg.Radio('rev', "motor_3_dir", default=True, k='m3_rev')],
+                  [sg.Text('motor 4'), sg.Slider(orientation='h',range=[0,100],k='m4_spd'), sg.Radio('fwd', "motor_4_dir", default=True, k='m4_fwd'), sg.Radio('rev', "motor_4_dir", default=True, k='m4_rev')],
                   [sg.Button('Ok'), sg.Button('Cancel')]]
 
         window = sg.Window('Window Title', layout)
